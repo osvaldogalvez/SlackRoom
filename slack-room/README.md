@@ -1,12 +1,8 @@
-# WordPress Hide Password Recovery
+# Slack Room Wp Plugin
 
-![Lint status](https://github.com/coderboxnet/cbox-hide-password-recovery/workflows/PHP%20Code%20Linting/badge.svg?branch=main)
-
-**Last stable version: v0.1.2**
+**Last stable version: v0.1.0**
 ## Description
-Small WordPress plugin to hide the lost password link from the login form and prevent the user to access the password reset/recovery form by redirecting them to another url.
-
-You could use this plugin with other security plugins such as [WordFence](https://wordpress.org/plugins/wordfence/), [iThemes Security](https://wordpress.org/plugins/better-wp-security/) and others. List of security plugins here: https://wordpress.org/plugins/search/security/
+Plugin to add a Slack Room widget to your website
 
 ## Installation
 Install this plugin like you would install any other WordPress plugin.
@@ -19,6 +15,9 @@ Install this plugin like you would install any other WordPress plugin.
 4. Click Upload plugin button
 5. Browse the downloaded zip file and click Install now
 6. Activate the plugin
+7. Insert you Slack API Tokent and Timezone on the settings section
+8. Go to Widgets section on the Wordpress Admin and drag / drop your Slack Room Widget and select you room
+9. Remember invite you app to get the chats inside the widget
 
 **Option 2:** Upload Method
 
@@ -28,5 +27,3 @@ Install this plugin like you would install any other WordPress plugin.
 4. Go to Plugins
 5. Activate the plugin
 
-## License
-GPLv3 or later http://www.gnu.org/licenses/gpl-3.0.html
