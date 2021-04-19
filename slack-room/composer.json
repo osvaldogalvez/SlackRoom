@@ -1,0 +1,21 @@
+{
+	"name": "Slack Room",
+	"description": "Small WordPress plugin to get slack room inside a wordpress page",
+	"version": "0.1.2",
+	"type": "wordpress-plugin",
+	"minimum-stability" : "dev",
+	"license": "GPL-3.0 License",
+	"authors": [
+		{
+			"name": "Osvaldo Galvez",
+			"email": "osvaldogalvez20@gmail.com"
+		}
+	],
+	"require-dev": {
+		"wp-coding-standards/wpcs": "^2.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
+	},
+	"scripts": {
+		"lint": "phpcs -s --standard=phpcs.xml && echo PHP OK"
+    }
+  }
