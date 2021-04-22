@@ -22,7 +22,7 @@ Install this plugin like you would install any other WordPress plugin.
 **Option 2:** Upload Method
 
 1. Download latest release and unzip
-2. Upload `cbox-hide-password-recovery` to the `/wp-content/plugins/` directory in the server
+2. Upload `slack-room` to the `/wp-content/plugins/` directory in the server
 3. Login to your WordPress admin
 4. Go to Plugins
 5. Activate the plugin
