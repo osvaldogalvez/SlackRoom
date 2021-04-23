@@ -1,11 +1,22 @@
 <?php  
 /**
- * 
+ * @package WP
+ * @subpackage Widget
+ * @author Osvaldo Galvez <osvaldogalvez20@gmail.com>
  * 
  */
 class slack_room_widget extends WP_Widget {
+    /*
+    * @var array of users
+    */
     private $user_list;
+    /*
+    * @var array of emojis
+    */
     private $all_emojis;
+    /*
+    * Class Constructor
+    */
     function __construct() {
         parent::__construct(
         // widget ID
@@ -16,6 +27,11 @@ class slack_room_widget extends WP_Widget {
         array( 'description' => __( 'Slack Room Widget', 'slack_room_widget_domain' ), )
         );
     }
+    /*
+    * Function to generate the widget
+    * @param array $args The Widget arguments
+    * @param array $instance The widget instance
+    */
     public function widget( $args, $instance ) {
         $title = apply_filters( 'widget_title', $instance['title'] );
         echo $args['before_widget'];
@@ -35,12 +51,16 @@ class slack_room_widget extends WP_Widget {
             $this->user_list = $this->get_all_users();
             $this->all_emojis = $this->get_all_emojis();
             foreach ($channel_history as $message) {
-                echo $this->render_message($message, $user_list);
+                echo $this->render_message($message, $this->user_list);
             }
         }
         
         echo $args['after_widget'];
     }
+    /*
+    * Function to generate the widget form on the admin
+    * @param array $instance  The widget instance
+    */
     public function form( $instance ) {
         $channels = $this->get_channels();
         if ( isset( $instance[ 'title' ] ) )
@@ -70,6 +90,13 @@ class slack_room_widget extends WP_Widget {
         </p>
     <?php
     }
+    
+    /*
+    * Function to update the widget
+    * @param array $new_instance  The new instance created
+    * @param array $old_instance  The previous instance
+    * @return $instance The instance updated
+    */
     public function update( $new_instance, $old_instance ) {
         $instance = array();
         $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
@@ -78,7 +105,12 @@ class slack_room_widget extends WP_Widget {
         
         return $instance;
     }
-
+    /*
+    * Private function to make request to Slack API
+    * @param string $apiPath  The path on the Slack API to make the request
+    * @param array $postFields The array with the fields to make the request
+    * @return object $result
+    */
     private function slack_api_request ( $apiPath, $postFields ) {
         
         $slackr_options = get_option("slackr_options");
@@ -108,9 +140,10 @@ class slack_room_widget extends WP_Widget {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
     }
-
-
-
+    /*
+    * Function to get all Slack channels
+    * @return array channels available on Slack
+    */
     public function get_channels() {
         $all_channels = $this->slack_api_request('conversations.list', [
             'limit' => 500,
@@ -122,17 +155,12 @@ class slack_room_widget extends WP_Widget {
             return $all_channels['channels'];
         return null;
     }
-
+    /*
+    * Function to get all emojis
+    * @return array $all_emojis
+    */
     private function get_all_emojis()
     {
-        global $emojiCacheFilename;
-        global $emojiCacheTimeout;
-
-       /* $all_emojis = read_from_cache($emojiCacheFilename, $emojiCacheTimeout);
-        if ($all_emojis) {
-            return $all_emojis;
-        }*/
-
         $all_emojis = $this->slack_api_request('emoji.list', [
             "channel" => $channelId,
         ]);
@@ -157,21 +185,15 @@ class slack_room_widget extends WP_Widget {
         $all['slightly_smiling_face'] = 'alias:wink';
         $all['white_frowning_face'] = 'alias:sad';
 
-        //write_to_cache($emojiCacheFilename, $all_emojis);
-
         return $all_emojis;
     }
-
+    /*
+    * Function to get all users from the room selected
+    * @return array $userlistIndexed
+    */
     private function get_all_users()
     {
-        global $userlistCacheFilename;
-        global $userlistCacheTimeout;
-
-        /*$userlist = read_from_cache($userlistCacheFilename, $userlistCacheTimeout);
-        if ($userlist) {
-            return $userlist;
-        }
-*/
+        
         $userlist = $this->slack_api_request( 'users.list', [
             'limit' => 800,
             'presence' => false,
@@ -183,21 +205,16 @@ class slack_room_widget extends WP_Widget {
             $userlistIndexed[$user['id']] = $user;
         }
 
-       // write_to_cache($userlistCacheFilename, $userlistIndexed);
-        
         return $userlistIndexed;
     }
+    /*
+    * Function to get the channel history
+    * @param string $channelId  The channel ID on Slack
+    * @param integer $history_count The total of history to display
+    * @return array $channel_history
+    */
     private function get_channel_history( $channelId, $history_count )
     {
-        global $channelCacheFilename;
-        global $channelCacheTimeout;
-
-
-       /* $channel_history = read_from_cache($channelCacheFilename, $channelCacheTimeout);
-        if ($channel_history) {
-            return $channel_history;
-        }*/
-
         $has_more = true;
         $channel_history = [];
         $fetch_from_ts = time();
@@ -215,10 +232,13 @@ class slack_room_widget extends WP_Widget {
             $fetch_from_ts = array_slice( $h['messages'], -1 )[0]['ts'];
         }
 
-        //write_to_cache($channelCacheFilename, $channel_history);
-
         return $channel_history;
     }
+    /*
+    * Function to get the User name by the User ID
+    * @param string $userId The user ID on Slack
+    * @return array $user if exists
+    */
     private function user_id_to_name( $userId ) {
         $user = $this->user_list[$userId];
         if ($user) {
@@ -228,7 +248,11 @@ class slack_room_widget extends WP_Widget {
             return 'Unknown';
         }
     }
-    
+    /*
+    * Function to get emoji per code
+    * @param string $coloncode
+    * @return string
+    */
     private function coloncode_to_emoji( $coloncode ) {
         $emoji = $this->all_emojis[$coloncode];
         if ( $emoji ) {
@@ -246,7 +270,11 @@ class slack_room_widget extends WP_Widget {
     
         return ':' . $coloncode . ':'; 
     }
-    
+    /*
+    * Function to replace the Slack tags (emojis)
+    * @param string $text
+    * @return string $text cleaned
+    */
     private function replace_slack_tags( $text ) {
         $text = preg_replace_callback(
             '/<@([a-zA-Z0-9]+)>/',
@@ -291,7 +319,11 @@ class slack_room_widget extends WP_Widget {
     
         return $text;
     }
-    
+    /*
+    * Function to render the user reactions
+    * @param array $reactions
+    * @return string $html
+    */
     private function render_reactions( $reactions ) {
         $html = '';
         foreach ($reactions as $r) {
@@ -306,11 +338,20 @@ class slack_room_widget extends WP_Widget {
     
         return $html;
     }
-    
+    /**
+    * Function to render the user Avatar
+    * @param array $user
+    * @return string The image html tag
+    **/
     private function render_avatar( $user ) {
         return '<img class="avatar" src="' . $user['profile']['image_48'] . '" aria-hidden="true" title="">';
     }
-    
+    /**
+    * Function to render the user info
+    * @param array $message
+    * @param array $user
+    * @return string $html to render
+    **/
     private function render_userinfo( $message, $user ) {
         $html = '<strong class="username">' . $this->user_id_to_name( $user['id'] ) . '</strong> ';
     
@@ -318,7 +359,12 @@ class slack_room_widget extends WP_Widget {
     
         return $html;
     }
-    
+    /**
+    * Fuction to render the user's message complete
+    * @param array $message
+    * @param array $user
+    * @return string $html
+    **/
     private function render_user_message( $message, $user ) {
         $html = '<div class="slack-message">';
         if ( isset( $message['parent_user_id'] ) ) {
@@ -342,7 +388,12 @@ class slack_room_widget extends WP_Widget {
     
         return $html;
     }
-    
+   /**
+   * Function to render in case there is a bot message
+   * @param array $message
+   * @param string $username
+   * @return string $html
+   **/
     private function render_bot_message( $message, $username ) {
         $html = '<div class="slack-message">';
         if ( isset( $message['parent_user_id'] ) ) {
@@ -361,7 +412,12 @@ class slack_room_widget extends WP_Widget {
         $html .= '</div>'; // .slack-message
         return $html;
     }
-    
+    /**
+    * Function to render any file shared inside message
+    * @param array $message
+    * @param array $user
+    * @return string $html
+    **/
     private function render_file_message( $message, $user ) {
         var_dump($user);
         $file = $message['file'];
@@ -390,10 +446,12 @@ class slack_room_widget extends WP_Widget {
         $html .= '</div>'; // .slack-message
         return $html;
     }
-    
     /**
-     * 
-     */
+     * Function to render the message depending of message type
+     * @param array $message
+     * @param array $user_list
+     * @return message rendered
+    **/
     private function render_message( $message, $user_list ) {
         $html = '';
         switch ( $message['type'] ) {
