@@ -5,7 +5,6 @@
  * Description: Show Slack Room Content inside wp page.
  * Version: 1.0
  * Author: Osvaldo Galvez
- * Author URI: https://www.coderbox.net/
  *
  * @package CODERBX Plugins
  * @subpackage Hide Password Recovery
@@ -73,15 +72,10 @@ add_action( 'admin_init', 'slackr_settings_init' );
 
 
 /**
-* Custom option and settings:
-*  - callback functions
-*/
-
-
-/**
 * Section callback function.
 *
 * @param array $args  The settings array, defining title, id, callback.
+*
 */
 function slackr_section_callback( $args ) {
 	?>
@@ -122,7 +116,7 @@ add_action( 'admin_menu', 'slackr_options_page' );
 
 
 /**
-* Top level menu callback function
+* Menu callback function
 */
 function slackr_options_page_html() {
 	// check user capabilities
@@ -163,5 +157,5 @@ function slackr_options_page_html() {
  */
 function slack_room_register_widget() {
 	register_widget( 'slack_room_widget' );
-	}
-	add_action( 'widgets_init', 'slack_room_register_widget' );
+}
+add_action( 'widgets_init', 'slack_room_register_widget' );
