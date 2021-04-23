@@ -5,9 +5,6 @@
  * Description: Show Slack Room Content inside wp page.
  * Version: 1.0
  * Author: Osvaldo Galvez
- *
- * @package CODERBX Plugins
- * @subpackage Hide Password Recovery
  */
 
 /**
